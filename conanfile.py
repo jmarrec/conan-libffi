@@ -154,7 +154,7 @@ class LibffiConan(ConanFile):
 
             # https://android.googlesource.com/platform/external/libffi/+/7748bd0e4a8f7d7c67b2867a3afdd92420e95a9f
             tools.replace_in_file(sysv_s_src, "stmeqia", "stmiaeq")
-                
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
@@ -241,6 +241,9 @@ class LibffiConan(ConanFile):
     def package(self):
         if self.settings.os == "Windows":
             self.copy("*.h", src="{}/include".format(self.build_folder), dst="include")
+            # Copy pdb
+            self.copy("**/*.pdb", src=self.build_folder, dst="include",
+                      keep_path=False)
         if self.settings.compiler == "Visual Studio":
             self.copy("*.lib", src="{}/.libs".format(self.build_folder), dst="lib")
             self.copy("*.dll", src="{}/.libs".format(self.build_folder), dst="bin")
@@ -249,6 +252,8 @@ class LibffiConan(ConanFile):
             with self._create_auto_tools_environment(autotools):
                 with tools.chdir(self.build_folder):
                     autotools.install()
+        # Copy fficonfig.h (TODO; only windows?)
+        self.copy("fficonfig.h", src=self.build_folder, dst="include")
         self.copy("LICENSE", src=os.path.join(self.source_folder, self._source_subfolder), dst="licenses")
 
     def package_info(self):
