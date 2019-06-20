@@ -241,8 +241,10 @@ class LibffiConan(ConanFile):
     def package(self):
         if self.settings.os == "Windows":
             self.copy("*.h", src="{}/include".format(self.build_folder), dst="include")
-            # Copy all pdbs to the include folder (TODO: filter them a bit?)
-            self.copy("*.pdb", src=self.build_folder, dst="include",
+            # Copy all pdbs to the lib folder
+            # TODO: filter them? rename ffi.pdf to libffi.pdb to match
+            # libffi.lib?
+            self.copy("*.pdb", src=self.build_folder, dst="lib",
                       keep_path=False)
         if self.settings.compiler == "Visual Studio":
             self.copy("*.lib", src="{}/.libs".format(self.build_folder), dst="lib")
